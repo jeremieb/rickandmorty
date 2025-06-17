@@ -6,8 +6,23 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1EA56BA72E018FAB001C28C5 /* Episode .swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA56BA62E018FAB001C28C5 /* Episode .swift */; };
+		1EA56BA92E018FE3001C28C5 /* APIResponseModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA56BA82E018FE3001C28C5 /* APIResponseModels.swift */; };
+		1EA56BAC2E019034001C28C5 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA56BAB2E019034001C28C5 /* NetworkService.swift */; };
+		1EA56BAE2E019073001C28C5 /* EpisodesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA56BAD2E019073001C28C5 /* EpisodesViewModel.swift */; };
+		1EA56BB02E0190A1001C28C5 /* EpisodesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA56BAF2E0190A1001C28C5 /* EpisodesListView.swift */; };
+		1EA56BBB2E0199DC001C28C5 /* EpisodeRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA56BBA2E0199DC001C28C5 /* EpisodeRowView.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		1EA56B932E018CA4001C28C5 /* Rick & Morty.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Rick & Morty.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1EA56BA62E018FAB001C28C5 /* Episode .swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Episode .swift"; sourceTree = "<group>"; };
+		1EA56BA82E018FE3001C28C5 /* APIResponseModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIResponseModels.swift; sourceTree = "<group>"; };
+		1EA56BAB2E019034001C28C5 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		1EA56BAD2E019073001C28C5 /* EpisodesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodesViewModel.swift; sourceTree = "<group>"; };
+		1EA56BAF2E0190A1001C28C5 /* EpisodesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodesListView.swift; sourceTree = "<group>"; };
+		1EA56BBA2E0199DC001C28C5 /* EpisodeRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeRowView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -32,6 +47,7 @@
 		1EA56B8A2E018CA4001C28C5 = {
 			isa = PBXGroup;
 			children = (
+				1EA56BAA2E019004001C28C5 /* controlers */,
 				1EA56BA52E018D56001C28C5 /* models */,
 				1EA56BA42E018D50001C28C5 /* viewmodels */,
 				1EA56BA22E018D46001C28C5 /* views */,
@@ -52,6 +68,7 @@
 			isa = PBXGroup;
 			children = (
 				1EA56BA32E018D4B001C28C5 /* components */,
+				1EA56BAF2E0190A1001C28C5 /* EpisodesListView.swift */,
 			);
 			path = views;
 			sourceTree = "<group>";
@@ -59,6 +76,7 @@
 		1EA56BA32E018D4B001C28C5 /* components */ = {
 			isa = PBXGroup;
 			children = (
+				1EA56BBA2E0199DC001C28C5 /* EpisodeRowView.swift */,
 			);
 			path = components;
 			sourceTree = "<group>";
@@ -66,6 +84,7 @@
 		1EA56BA42E018D50001C28C5 /* viewmodels */ = {
 			isa = PBXGroup;
 			children = (
+				1EA56BAD2E019073001C28C5 /* EpisodesViewModel.swift */,
 			);
 			path = viewmodels;
 			sourceTree = "<group>";
@@ -73,8 +92,18 @@
 		1EA56BA52E018D56001C28C5 /* models */ = {
 			isa = PBXGroup;
 			children = (
+				1EA56BA62E018FAB001C28C5 /* Episode .swift */,
+				1EA56BA82E018FE3001C28C5 /* APIResponseModels.swift */,
 			);
 			path = models;
+			sourceTree = "<group>";
+		};
+		1EA56BAA2E019004001C28C5 /* controlers */ = {
+			isa = PBXGroup;
+			children = (
+				1EA56BAB2E019034001C28C5 /* NetworkService.swift */,
+			);
+			path = controlers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -151,6 +180,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1EA56BAC2E019034001C28C5 /* NetworkService.swift in Sources */,
+				1EA56BAE2E019073001C28C5 /* EpisodesViewModel.swift in Sources */,
+				1EA56BA72E018FAB001C28C5 /* Episode .swift in Sources */,
+				1EA56BBB2E0199DC001C28C5 /* EpisodeRowView.swift in Sources */,
+				1EA56BB02E0190A1001C28C5 /* EpisodesListView.swift in Sources */,
+				1EA56BA92E018FE3001C28C5 /* APIResponseModels.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
