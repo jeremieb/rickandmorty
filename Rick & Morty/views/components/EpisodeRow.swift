@@ -21,15 +21,13 @@ struct EpisodeRow: View {
                     .font(.headline).fontWidth(.expanded)
                     .lineLimit(2)
                 EpisodeNumber(number: episode.episode)
-                Text(episode.airDate)
+                Text(episode.formattedAirDate)
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
             Spacer()
             Image(systemName: "chevron.right")
                 .foregroundStyle(Color.accentColor.opacity(0.5))
-        }
-        
-        .padding(.vertical, 2)
+        }.padding(.vertical, 2)
     }
 }

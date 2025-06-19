@@ -29,7 +29,7 @@ final class Episode {
     }
 }
 
-// Extension to convert from API response
+// Convert from API response to the desired format
 extension Episode {
     convenience init(from apiEpisode: APIEpisode) {
         let characterURLs = apiEpisode.characters.compactMap { URL(string: $0) }
@@ -73,5 +73,32 @@ extension Episode {
             // Extract ID from URL like "https://rickandmortyapi.com/api/character/1"
             return Int(url.lastPathComponent)
         }
+    }
+    
+    var formattedAirDate: String {
+        return airDate.formattedDate()
+    }
+}
+
+// MARK: Date formatter
+extension String {
+    func formattedDate() -> String {
+        // Input format: "September 10, 2017"
+        // Output format: "10 September 2017"
+        
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "MMMM d, yyyy"
+        inputFormatter.locale = Locale(identifier: "en_US")
+        
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateFormat = "d MMMM yyyy"
+        outputFormatter.locale = Locale(identifier: "en_US")
+        
+        if let date = inputFormatter.date(from: self) {
+            return outputFormatter.string(from: date)
+        }
+        
+        // If parsing fails, return original string
+        return self
     }
 }
