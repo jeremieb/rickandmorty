@@ -12,18 +12,24 @@ struct EpisodeRow: View {
     
     var body: some View {
         HStack(spacing: 16) {
-            Image(systemName: "\(episode.episodeNumber).circle.fill")
-                .resizable().scaledToFit()
-                .frame(width: 46)
-                .foregroundColor(.accent).opacity(0.5)
+            if let episodeNumber = episode.episodeNumber {
+                Image(systemName: "\(episodeNumber).circle.fill")
+                    .resizable().scaledToFit()
+                    .frame(width: 46)
+                    .foregroundColor(.accent).opacity(0.5)
+            }
             VStack(alignment: .leading, spacing: 8) {
-                Text(episode.name)
-                    .font(.headline).fontWidth(.expanded)
-                    .lineLimit(2)
+                if let episodeName = episode.name {
+                    Text(episodeName)
+                        .font(.headline).fontWidth(.expanded)
+                        .lineLimit(2)
+                }
                 EpisodeNumber(number: episode.episode)
-                Text(episode.formattedAirDate)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                if let formattedAirDate = episode.formattedAirDate {
+                    Text(formattedAirDate)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
             }
             Spacer()
             Image(systemName: "chevron.right")

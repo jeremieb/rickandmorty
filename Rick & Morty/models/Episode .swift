@@ -11,12 +11,12 @@ import SwiftData
 @Model
 final class Episode {
     @Attribute(.unique) var id: Int
-    var name: String
-    var airDate: String
-    var episode: String
-    var characters: [URL]
-    var url: String
-    var created: String
+    var name: String?
+    var airDate: String?
+    var episode: String?
+    var characters: [URL]?
+    var url: String?
+    var created: String?
     
     init(id: Int, name: String, airDate: String, episode: String, characters: [URL], url: String, created: String) {
         self.id = id
@@ -45,38 +45,54 @@ extension Episode {
         )
     }
     
-    var seasonNumber: Int {
+    var seasonNumber: Int? {
         // Extract season from format "S01E01" -> 1
-        let episodeCode = episode.uppercased()
-        if episodeCode.hasPrefix("S"), let sIndex = episodeCode.firstIndex(of: "S") {
-            let afterS = episodeCode[episodeCode.index(after: sIndex)...]
-            if let eIndex = afterS.firstIndex(of: "E") {
-                let seasonString = String(afterS[..<eIndex])
-                return Int(seasonString) ?? 1
+        if let episodeCode = episode {
+            let uppercased = episodeCode.uppercased()
+            if uppercased.hasPrefix("S"), let sIndex = episodeCode.firstIndex(of: "S") {
+                let afterS = episodeCode[episodeCode.index(after: sIndex)...]
+                if let eIndex = afterS.firstIndex(of: "E") {
+                    let seasonString = String(afterS[..<eIndex])
+                    return Int(seasonString) ?? 1
+                }
             }
+            return 1 // Default to season 1 if parsing fails
+        } else {
+            return nil
         }
-        return 1 // Default to season 1 if parsing fails
     }
     
-    var episodeNumber: Int {
+    var episodeNumber: Int? {
         // Extract episode from format "S01E01" -> 1
-        let episodeCode = episode.uppercased()
-        if let eIndex = episodeCode.firstIndex(of: "E") {
-            let afterE = episodeCode[episodeCode.index(after: eIndex)...]
-            return Int(String(afterE)) ?? 1
-        }
-        return 1 // Default to episode 1 if parsing fails
-    }
-    
-    var characterIDs: [Int] {
-        return characters.compactMap { url in
-            // Extract ID from URL like "https://rickandmortyapi.com/api/character/1"
-            return Int(url.lastPathComponent)
+        if let episodeCode = episode {
+            let uppercased = episodeCode.uppercased()
+            if let eIndex = uppercased.firstIndex(of: "E") {
+                let afterE = episodeCode[episodeCode.index(after: eIndex)...]
+                return Int(String(afterE)) ?? 1
+            }
+            return 1 // Default to episode 1 if parsing fails
+        } else {
+            return nil
         }
     }
     
-    var formattedAirDate: String {
-        return airDate.formattedDate()
+    var characterIDs: [Int]? {
+        if let characters {
+            return characters.compactMap { url in
+                // Extract ID from URL like "https://rickandmortyapi.com/api/character/1"
+                return Int(url.lastPathComponent)
+            }
+        } else {
+            return nil
+        }
+    }
+    
+    var formattedAirDate: String? {
+        if let airDate {
+            return airDate.formattedDate()
+        } else {
+            return nil
+        }
     }
 }
 

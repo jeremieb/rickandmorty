@@ -33,3 +33,28 @@ struct APIEpisode: Codable {
         case airDate = "air_date"
     }
 }
+
+struct CharactersResponse: Codable {
+    let info: ResponseInfo
+    let results: [APICharacter]
+}
+
+struct APICharacter: Codable {
+    let id: Int
+    let name: String
+    let status: String
+    let species: String
+    let type: String
+    let gender: String
+    let origin: APILocation
+    let location: APILocation
+    let image: String
+    let episode: [String]
+    let url: String
+    let created: String
+}
+
+struct APILocation: Codable {
+    let name: String
+    let url: String
+}

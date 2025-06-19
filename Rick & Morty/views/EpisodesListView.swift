@@ -127,7 +127,7 @@ struct EpisodesListView: View {
     // MARK: Grouping episodes per season
     private var groupedEpisodes: [Int: [Episode]] {
         Dictionary(grouping: viewModel.episodes) { episode in
-            episode.seasonNumber
+            episode.seasonNumber ?? 0
         }
     }
 }

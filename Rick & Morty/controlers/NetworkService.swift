@@ -17,7 +17,7 @@ import Foundation
 /// - Handle network errors and provide meaningful error messages
 /// - Manage API pagination internally (Rick & Morty has 3 pages of episodes)
 class NetworkService {
-
+    
     /// Shared instance of NetworkService (singleton pattern)
     static let shared = NetworkService()
     
@@ -26,7 +26,7 @@ class NetworkService {
     
     /// Private initializer to enforce singleton pattern
     private init() {}
-
+    
     /// Fetch a specific page of episodes from the Rick & Morty API
     ///
     /// - Parameter page: Page number to fetch (defaults to 1)
@@ -55,7 +55,49 @@ class NetworkService {
             throw NetworkError.decodingError
         }
     }
-
+    
+    func fetchCharacter(id: Int) async throws -> APICharacter {
+        guard let url = URL(string: "\(baseURL)/character/\(id)") else {
+            throw NetworkError.invalidURL
+        }
+        
+        let (data, response) = try await URLSession.shared.data(from: url)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200 else {
+            throw NetworkError.invalidResponse
+        }
+        
+        do {
+            let character = try JSONDecoder().decode(APICharacter.self, from: data)
+            return character
+        } catch {
+            throw NetworkError.decodingError
+        }
+    }
+    
+    func fetchCharacters(ids: [Int]) async throws -> [APICharacter] {
+        let idsString = ids.map { String($0) }.joined(separator: ",")
+        guard let url = URL(string: "\(baseURL)/character/\(idsString)") else {
+            throw NetworkError.invalidURL
+        }
+        
+        let (data, response) = try await URLSession.shared.data(from: url)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200 else {
+            throw NetworkError.invalidResponse
+        }
+        
+        do {
+            // API returns array for multiple characters
+            let characters = try JSONDecoder().decode([APICharacter].self, from: data)
+            return characters
+        } catch {
+            throw NetworkError.decodingError
+        }
+    }
+    
 }
 
 // MARK: - Network Errors
