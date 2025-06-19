@@ -12,6 +12,8 @@ struct EpisodesListView: View {
     @StateObject private var viewModel: EpisodesViewModel
     @Environment(\.modelContext) private var modelContext
     
+    @State private var selectedEpisode: Episode?
+    
     init() {
         self._viewModel = StateObject(wrappedValue: EpisodesViewModel(modelContext: ModelContext(try! ModelContainer(for: Episode.self))))
     }
@@ -19,7 +21,7 @@ struct EpisodesListView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                if viewModel.isLoading && viewModel.episodes.isEmpty {
+                if viewModel.isLoading {
                     ProgressView("Loading episodes...")
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if viewModel.episodes.isEmpty {
@@ -38,43 +40,17 @@ struct EpisodesListView: View {
                         ForEach(groupedEpisodes.keys.sorted(), id: \.self) { seasonNumber in
                             Section(header: Text("Season \(seasonNumber)")) {
                                 ForEach(groupedEpisodes[seasonNumber] ?? [], id: \.id) { episode in
-                                    NavigationLink(destination: EmptyView()) {
-                                        EpisodeRowView(episode: episode)
+                                    Button(action: {
+                                        self.selectedEpisode = episode
+                                    }){
+                                        EpisodeRow(episode: episode)
                                     }
                                 }
                             }
                         }
                         
-                        Section {
-                            if viewModel.hasMorePages {
-                                Button(action: {
-                                    Task {
-                                        await viewModel.loadNextPage()
-                                    }
-                                }) {
-                                    HStack {
-                                        if viewModel.isLoadingMore {
-                                            ProgressView().scaleEffect(0.8)
-                                            Text("Loading page \(viewModel.currentPage + 1)...")
-                                        } else {
-                                            Image(systemName: "arrow.down.circle.fill").font(.body)
-                                            Text("Load Page \(viewModel.currentPage + 1)")
-                                        }
-                                    }
-                                    .font(.caption)
-                                    .foregroundColor(viewModel.isLoadingMore ? .secondary : .accentColor)
-                                    .frame(maxWidth: .infinity, alignment: .center)
-                                }.disabled(viewModel.isLoadingMore)
-                            } else if !viewModel.episodes.isEmpty {
-                                Text("Stay tuned for more episodes soon...")
-                                    .font(.caption).foregroundColor(.secondary)
-                                    .frame(maxWidth: .infinity, alignment: .center)
-                                    .padding()
-                            }
-                        }
-                        .listRowInsets(.init())
-                        .listRowBackground(Color.clear)
-                        .listRowSeparator(.hidden)
+                        /// Load more or not
+                        EndList()
                     }
                     .refreshable {
                         await viewModel.refreshEpisodes()
@@ -108,6 +84,40 @@ struct EpisodesListView: View {
         .onAppear {
             viewModel.modelContext = modelContext
         }
+    }
+    
+    @ViewBuilder
+    private func EndList() -> some View {
+        Section {
+            if viewModel.hasMorePages {
+                Button(action: {
+                    Task {
+                        await viewModel.loadNextPage()
+                    }
+                }) {
+                    HStack {
+                        if viewModel.isLoadingMore {
+                            ProgressView().scaleEffect(0.8)
+                            Text("Loading page \(viewModel.currentPage + 1)...")
+                        } else {
+                            Image(systemName: "arrow.down.circle.fill").font(.body)
+                            Text("Next")
+                        }
+                    }
+                    .font(.caption)
+                    .foregroundColor(viewModel.isLoadingMore ? .secondary : .accentColor)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                }.disabled(viewModel.isLoadingMore)
+            } else if !viewModel.episodes.isEmpty {
+                Text("Stay tuned for more episodes soon...")
+                    .font(.caption).foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding()
+            }
+        }
+        .listRowInsets(.init())
+        .listRowBackground(Color.clear)
+        .listRowSeparator(.hidden)
     }
     
     private var groupedEpisodes: [Int: [Episode]] {

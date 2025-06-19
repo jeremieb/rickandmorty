@@ -14,11 +14,11 @@ final class Episode {
     var name: String
     var airDate: String
     var episode: String
-    var characters: [String]
+    var characters: [URL]
     var url: String
     var created: String
     
-    init(id: Int, name: String, airDate: String, episode: String, characters: [String], url: String, created: String) {
+    init(id: Int, name: String, airDate: String, episode: String, characters: [URL], url: String, created: String) {
         self.id = id
         self.name = name
         self.airDate = airDate
@@ -32,12 +32,14 @@ final class Episode {
 // Extension to convert from API response
 extension Episode {
     convenience init(from apiEpisode: APIEpisode) {
+        let characterURLs = apiEpisode.characters.compactMap { URL(string: $0) }
+        
         self.init(
             id: apiEpisode.id,
             name: apiEpisode.name,
             airDate: apiEpisode.airDate,
             episode: apiEpisode.episode,
-            characters: apiEpisode.characters,
+            characters: characterURLs,
             url: apiEpisode.url,
             created: apiEpisode.created
         )
@@ -64,5 +66,12 @@ extension Episode {
             return Int(String(afterE)) ?? 1
         }
         return 1 // Default to episode 1 if parsing fails
+    }
+    
+    var characterIDs: [Int] {
+        return characters.compactMap { url in
+            // Extract ID from URL like "https://rickandmortyapi.com/api/character/1"
+            return Int(url.lastPathComponent)
+        }
     }
 }

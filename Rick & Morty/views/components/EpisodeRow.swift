@@ -1,5 +1,5 @@
 //
-//  EpisodeRowView.swift
+//  EpisodeRow.swift
 //  Rick & Morty
 //
 //  Created by Jeremie Berduck on 17/06/2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct EpisodeRowView: View {
+struct EpisodeRow: View {
     let episode: Episode
     
     var body: some View {
@@ -20,16 +20,14 @@ struct EpisodeRowView: View {
                 Text(episode.name)
                     .font(.headline).fontWidth(.expanded)
                     .lineLimit(2)
-                Text(episode.episode)
-                    .font(.caption)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 2)
-                    .background(Color.accent.opacity(0.2))
-                    .cornerRadius(10)
+                EpisodeNumber(number: episode.episode)
                 Text(episode.airDate)
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
+            Spacer()
+            Image(systemName: "chevron.right")
+                .foregroundStyle(Color.accentColor.opacity(0.5))
         }
         
         .padding(.vertical, 2)
