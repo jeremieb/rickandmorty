@@ -9,6 +9,6 @@ struct MainView: App {
         WindowGroup {
             EpisodesListView()
         }
-        .modelContainer(for: Episode.self)
+        .modelContainer(for: [Episode.self, Character.self])
     }
 }

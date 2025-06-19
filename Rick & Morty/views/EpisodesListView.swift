@@ -21,7 +21,7 @@ struct EpisodesListView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                if viewModel.isLoading {
+                if viewModel.isLoading && viewModel.episodes.isEmpty {
                     ProgressView("Loading episodes...")
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if viewModel.episodes.isEmpty {
