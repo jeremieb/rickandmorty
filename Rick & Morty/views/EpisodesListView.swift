@@ -56,6 +56,9 @@ struct EpisodesListView: View {
                         await viewModel.refreshEpisodes()
                     }
                     .listStyle(.plain)
+                    .navigationDestination(item: $selectedEpisode) { episode in
+                        EpisodeDetailView(selectedEpisode: episode)
+                    }
                 }
                 
                 if let errorMessage = viewModel.errorMessage {
@@ -86,6 +89,7 @@ struct EpisodesListView: View {
         }
     }
     
+    // MARK: End list
     @ViewBuilder
     private func EndList() -> some View {
         Section {
@@ -120,6 +124,7 @@ struct EpisodesListView: View {
         .listRowSeparator(.hidden)
     }
     
+    // MARK: Grouping episodes per season
     private var groupedEpisodes: [Int: [Episode]] {
         Dictionary(grouping: viewModel.episodes) { episode in
             episode.seasonNumber

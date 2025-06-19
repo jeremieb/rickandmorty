@@ -9,12 +9,16 @@ import SwiftUI
 
 struct EpisodeDetailView: View {
     
-    @Binding var selectedEpisode: Episode?
+    var selectedEpisode: Episode?
     
     var body: some View {
         if let selectedEpisode {
             ScrollView {
-                EpisodeNumber(number: selectedEpisode.episode)
+                VStack(alignment: .leading) {
+                    EpisodeNumber(number: selectedEpisode.episode)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
             }
             .navigationTitle(selectedEpisode.name)
         } else {
@@ -28,5 +32,5 @@ struct EpisodeDetailView: View {
 }
 
 #Preview {
-    EpisodeDetailView(selectedEpisode: .constant(nil))
+    EpisodeDetailView(selectedEpisode: nil)
 }
