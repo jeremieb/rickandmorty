@@ -47,7 +47,7 @@ struct EpisodeDetailView: View {
                             }){
                                 ZStack {
                                     Circle()
-                                        .fill(characterViewModel.character(id: characterID) != nil ? Color.green.opacity(0.6) : Color.orange.opacity(0.6))
+                                        .fill(Color.orange.opacity(0.6))
                                         .frame(width: 64, height: 64)
                                     
                                     if characterViewModel.isLoading(id: characterID) {
@@ -60,7 +60,7 @@ struct EpisodeDetailView: View {
                                     }
                                 }
                             }
-                            .accentColor(Color.white)
+                            .accentColor(Color.white).opacity(characterViewModel.isLoading(id: characterID) ? 0.6 : 1)
                             .disabled(characterViewModel.isLoading(id: characterID))
                         }
                     }
