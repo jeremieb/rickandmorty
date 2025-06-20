@@ -13,43 +13,78 @@ struct EpisodesListView: View {
     
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(groupedEpisodes.keys.sorted(), id: \.self) { seasonNumber in
-                    Section(header: Text("Season \(seasonNumber)")) {
-                        ForEach(groupedEpisodes[seasonNumber] ?? [], id: \.id) { episode in
-                            Button(action: {
-                                
-                            }){
-                                EpisodeRow(episode: episode)
-                            }
+            Group {
+                switch episodeVM.status {
+                    case .idle:
+                        ContentUnavailableView {
+                            Label("No episode available", systemImage: "exclamationmark.triangle")
+                        } description: {
+                            Text("Something went wrong.")
+                        } actions: {
+                            Button("Try Again") {
+                                Task {
+                                    await episodeVM.loadEpisodes()
+                                }
+                            }.buttonStyle(.borderedProminent)
                         }
-                    }
-                }
-                
-                /// if we have an URL, there is a second page
-                Section {
-                    if episodeVM.data?.info.next != nil {
-                        Button(action: {
+                    case .loading:
+                        ProgressView()
+                    case .loaded():
+                        List {
+                            ForEach(groupedEpisodes.keys.sorted(), id: \.self) { seasonNumber in
+                                Section(header: Text("Season \(seasonNumber)")) {
+                                    ForEach(groupedEpisodes[seasonNumber] ?? [], id: \.id) { episode in
+                                        Button(action: {
+                                            
+                                        }){
+                                            EpisodeRow(episode: episode)
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            /// if we have a info.next object, there is a second page
+                            Section {
+                                VStack {
+                                    if episodeVM.data?.info.next != nil {
+                                        Button(action: {
+                                            Task {
+                                                await self.episodeVM.loadNextPage()
+                                            }
+                                        }){
+                                            Text("more episodes")
+                                        }.buttonStyle(.borderedProminent)
+                                    } else {
+                                        Text("End of the list")
+                                            .font(.footnote).foregroundStyle(.secondary)
+                                    }
+                                }.frame(maxWidth: .infinity, alignment: .center)
+                            }
+                            .listRowBackground(Color.clear)
+                            .listRowInsets(.init())
+                            .listRowSeparator(.hidden)
+                            .padding()
+                        }
+                        .listStyle(.plain)
+                        .refreshable {
                             Task {
-                                await self.episodeVM.loadNextPage()
+                                await self.episodeVM.loadEpisodes()
                             }
-                        }){
-                            Text("Next page")
                         }
-                    } else {
-                        Text("End of the list")
-                    }
+                    case .failed(let error):
+                        ContentUnavailableView {
+                            Label("No episode available", systemImage: "exclamationmark.triangle")
+                        } description: {
+                            Text(error?.localizedDescription ?? "Something went wrong.")
+                        } actions: {
+                            Button("Try Again") {
+                                Task {
+                                    await episodeVM.loadEpisodes()
+                                }
+                            }.buttonStyle(.borderedProminent)
+                        }
                 }
-                .listRowBackground(Color.clear)
-                .listRowInsets(.init())
-            }
-            .listStyle(.plain)
-            .refreshable {
-                Task {
-                    await self.episodeVM.loadEpisodes()
-                }
-            }
-            .navigationTitle("Rick & Morty")
+            }.navigationTitle("Rick & Morty")
         }
     }
     
