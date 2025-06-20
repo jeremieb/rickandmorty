@@ -46,7 +46,7 @@ struct EpisodesListView: View {
                             }
                         }
                         .navigationDestination(item: $selectedEpisode) { episode in
-                            EpisodeDetailView(episode: episode)
+                            EpisodeDetailView(selectedEpisode: episode)
                         }
                     case .failed(let error):
                         ErrorMessage(description: error?.localizedDescription ?? "Something went wrong.")

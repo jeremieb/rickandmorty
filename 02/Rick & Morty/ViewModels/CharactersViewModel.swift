@@ -9,7 +9,7 @@ import Foundation
 
 class CharactersViewModel: ObservableObject {
     
-    @Published var allCharacters: [Character] = []
+    @Published var selectedCharacter: Character?
     
     
 }

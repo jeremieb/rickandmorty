@@ -20,6 +20,7 @@
 		1E16170D2E045F0700D4BE1E /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E16170C2E045F0700D4BE1E /* NetworkService.swift */; };
 		1E16170F2E0460A800D4BE1E /* LoadStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E16170E2E0460A800D4BE1E /* LoadStatus.swift */; };
 		1E90CB722E055BBE001D543F /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E90CB712E055BBE001D543F /* ErrorMessage.swift */; };
+		1E90CB7B2E0561BA001D543F /* Int.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E90CB7A2E0561BA001D543F /* Int.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +38,7 @@
 		1E16170C2E045F0700D4BE1E /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		1E16170E2E0460A800D4BE1E /* LoadStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadStatus.swift; sourceTree = "<group>"; };
 		1E90CB712E055BBE001D543F /* ErrorMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessage.swift; sourceTree = "<group>"; };
+		1E90CB7A2E0561BA001D543F /* Int.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Int.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -123,6 +125,7 @@
 			isa = PBXGroup;
 			children = (
 				1E1617072E045BA500D4BE1E /* String.swift */,
+				1E90CB7A2E0561BA001D543F /* Int.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -222,6 +225,7 @@
 				1E1616F72E04540400D4BE1E /* EpisodeDetailView.swift in Sources */,
 				1E16170F2E0460A800D4BE1E /* LoadStatus.swift in Sources */,
 				1E16170D2E045F0700D4BE1E /* NetworkService.swift in Sources */,
+				1E90CB7B2E0561BA001D543F /* Int.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Character {
+struct Character: Identifiable {
     var id: Int
     var name: String?
     var status: String?
