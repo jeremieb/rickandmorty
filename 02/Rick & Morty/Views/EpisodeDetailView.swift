@@ -42,6 +42,7 @@ struct EpisodeDetailView: View {
                     }
                     .sheet(item: $selectedCharacterID, onDismiss: self.characterVM.clearSelectedCharacter) { characterID in
                         CharacterDetailView(selectedCharacterID: characterID)
+                            .presentationDragIndicator(.visible)
                     }
                 }
                 

@@ -77,6 +77,18 @@ struct CharacterDetailView: View {
                                             CharacterDetailRow(label: "Appearance", value: "\(episodesCount) \(episodesCount <= 1 ? "episode" : "episodes")")
                                         }
                                     }
+                                    
+                                    Section {
+                                        Button(action: {
+                                            
+                                        }){
+                                            Label("Save this character", systemImage: "square.and.arrow.down")
+                                                .fontWeight(.semibold).foregroundStyle(.primary)
+                                                .frame(maxWidth: .infinity, alignment: .center)
+                                        }.buttonStyle(.borderedProminent)
+                                    }
+                                    .listRowBackground(Color.clear)
+                                    .listRowInsets(.init())
                                 }.navigationTitle(character.name ?? "No name")
                             } else {
                                 ErrorMessage(description: "Error loading this character.")
@@ -107,5 +119,6 @@ struct CharacterDetailView: View {
 }
 
 #Preview {
-    CharacterDetailView()
+    CharacterDetailView(selectedCharacterID: 1)
+        .environmentObject(CharactersViewModel())
 }
