@@ -11,6 +11,9 @@ struct EpisodesListView: View {
     
     @EnvironmentObject private var episodeVM: EpisodesViewModel
     
+    /// Selected Episode
+    @State private var selectedEpisode: Episode?
+    
     var body: some View {
         NavigationStack {
             Group {
@@ -35,7 +38,7 @@ struct EpisodesListView: View {
                                 Section(header: Text("Season \(seasonNumber)")) {
                                     ForEach(groupedEpisodes[seasonNumber] ?? [], id: \.id) { episode in
                                         Button(action: {
-                                            
+                                            self.selectedEpisode = episode
                                         }){
                                             EpisodeRow(episode: episode)
                                         }
@@ -70,6 +73,9 @@ struct EpisodesListView: View {
                             Task {
                                 await self.episodeVM.loadEpisodes()
                             }
+                        }
+                        .navigationDestination(item: $selectedEpisode) { episode in
+                            EpisodeDetailView(episode: episode)
                         }
                     case .failed(let error):
                         ContentUnavailableView {

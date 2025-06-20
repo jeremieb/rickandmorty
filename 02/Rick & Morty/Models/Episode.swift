@@ -20,7 +20,7 @@ struct Info: Codable {
     let prev: URL?
 }
 
-struct Episode: Codable, Identifiable {
+struct Episode: Codable, Identifiable, Hashable {
     var id: Int
     var name: String?
     var air_date: String?
