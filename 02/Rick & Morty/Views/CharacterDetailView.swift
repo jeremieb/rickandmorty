@@ -112,6 +112,7 @@ struct CharacterDetailView: View {
                         }
                     }
                 }
+                .textSelection(.enabled)
             }
             .task {
                 Task {
