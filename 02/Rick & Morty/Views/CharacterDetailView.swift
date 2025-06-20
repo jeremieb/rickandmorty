@@ -80,7 +80,7 @@ struct CharacterDetailView: View {
                                     
                                     Section {
                                         Button(action: {
-                                            
+                                            self.characterVM.exportCharacter()
                                         }){
                                             Label("Save this character", systemImage: "square.and.arrow.down")
                                                 .fontWeight(.semibold).foregroundStyle(.primary)
@@ -89,6 +89,12 @@ struct CharacterDetailView: View {
                                     }
                                     .listRowBackground(Color.clear)
                                     .listRowInsets(.init())
+                                    .fileExporter(
+                                        isPresented: $characterVM.showingExporter,
+                                        document: characterVM.exportDocument,
+                                        contentType: .plainText,
+                                        defaultFilename: characterVM.exportFileName
+                                    ) { _ in }
                                 }.navigationTitle(character.name ?? "No name")
                             } else {
                                 ErrorMessage(description: "Error loading this character.")

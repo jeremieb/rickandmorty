@@ -22,6 +22,7 @@
 		1E90CB722E055BBE001D543F /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E90CB712E055BBE001D543F /* ErrorMessage.swift */; };
 		1E90CB7B2E0561BA001D543F /* Int.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E90CB7A2E0561BA001D543F /* Int.swift */; };
 		1E90CB7F2E056AD2001D543F /* CharacterDetailRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E90CB7E2E056AD2001D543F /* CharacterDetailRow.swift */; };
+		1E90CB812E058332001D543F /* TextDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E90CB802E058332001D543F /* TextDocument.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +42,7 @@
 		1E90CB712E055BBE001D543F /* ErrorMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessage.swift; sourceTree = "<group>"; };
 		1E90CB7A2E0561BA001D543F /* Int.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Int.swift; sourceTree = "<group>"; };
 		1E90CB7E2E056AD2001D543F /* CharacterDetailRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterDetailRow.swift; sourceTree = "<group>"; };
+		1E90CB802E058332001D543F /* TextDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDocument.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -65,6 +67,7 @@
 		1E1616D92E04533600D4BE1E = {
 			isa = PBXGroup;
 			children = (
+				1E90CB822E0585A4001D543F /* Helpers */,
 				1E16170B2E045EF600D4BE1E /* Controller */,
 				1E1617062E045B9E00D4BE1E /* Extensions */,
 				1E1617032E0454FC00D4BE1E /* ViewModels */,
@@ -139,6 +142,14 @@
 				1E16170C2E045F0700D4BE1E /* NetworkService.swift */,
 			);
 			path = Controller;
+			sourceTree = "<group>";
+		};
+		1E90CB822E0585A4001D543F /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				1E90CB802E058332001D543F /* TextDocument.swift */,
+			);
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -226,6 +237,7 @@
 				1E1616FC2E04542900D4BE1E /* EpisodeNumber.swift in Sources */,
 				1E1616FE2E04544300D4BE1E /* CharacterDetailView.swift in Sources */,
 				1E1617052E04555700D4BE1E /* EpisodesViewModel.swift in Sources */,
+				1E90CB812E058332001D543F /* TextDocument.swift in Sources */,
 				1E1616F72E04540400D4BE1E /* EpisodeDetailView.swift in Sources */,
 				1E16170F2E0460A800D4BE1E /* LoadStatus.swift in Sources */,
 				1E16170D2E045F0700D4BE1E /* NetworkService.swift in Sources */,

@@ -28,8 +28,6 @@ class NetworkService {
         
         do {
             let decoder = JSONDecoder()
-            decoder.keyDecodingStrategy = .convertFromSnakeCase // To convert snake_case to camelCase
-            
             return try decoder.decode(T.self, from: data)
         } catch {
             // Debug: Print detailed decoding error
