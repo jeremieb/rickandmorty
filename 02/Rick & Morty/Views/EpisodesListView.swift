@@ -19,17 +19,7 @@ struct EpisodesListView: View {
             Group {
                 switch episodeVM.status {
                     case .idle:
-                        ContentUnavailableView {
-                            Label("No episode available", systemImage: "exclamationmark.triangle")
-                        } description: {
-                            Text("Something went wrong.")
-                        } actions: {
-                            Button("Try Again") {
-                                Task {
-                                    await episodeVM.loadEpisodes()
-                                }
-                            }.buttonStyle(.borderedProminent)
-                        }
+                        ErrorMessage()
                     case .loading:
                         ProgressView()
                     case .loaded():
@@ -47,26 +37,7 @@ struct EpisodesListView: View {
                             }
                             
                             /// if we have a info.next object, there is a second page
-                            Section {
-                                VStack {
-                                    if episodeVM.data?.info.next != nil {
-                                        Button(action: {
-                                            Task {
-                                                await self.episodeVM.loadNextPage()
-                                            }
-                                        }){
-                                            Text("more episodes")
-                                        }.buttonStyle(.borderedProminent)
-                                    } else {
-                                        Text("End of the list")
-                                            .font(.footnote).foregroundStyle(.secondary)
-                                    }
-                                }.frame(maxWidth: .infinity, alignment: .center)
-                            }
-                            .listRowBackground(Color.clear)
-                            .listRowInsets(.init())
-                            .listRowSeparator(.hidden)
-                            .padding()
+                            EndOfTheList()
                         }
                         .listStyle(.plain)
                         .refreshable {
@@ -78,17 +49,7 @@ struct EpisodesListView: View {
                             EpisodeDetailView(episode: episode)
                         }
                     case .failed(let error):
-                        ContentUnavailableView {
-                            Label("No episode available", systemImage: "exclamationmark.triangle")
-                        } description: {
-                            Text(error?.localizedDescription ?? "Something went wrong.")
-                        } actions: {
-                            Button("Try Again") {
-                                Task {
-                                    await episodeVM.loadEpisodes()
-                                }
-                            }.buttonStyle(.borderedProminent)
-                        }
+                        ErrorMessage(description: error?.localizedDescription ?? "Something went wrong.")
                 }
             }.navigationTitle("Rick & Morty")
         }
@@ -99,6 +60,31 @@ struct EpisodesListView: View {
         Dictionary(grouping: episodeVM.episodes) { episode in
             episode.seasonNumber ?? 0
         }
+    }
+    
+    // MARK: End of the list
+    @ViewBuilder private func EndOfTheList() -> some View {
+        Section {
+            VStack {
+                if episodeVM.data?.info.next != nil {
+                    Button(action: {
+                        Task {
+                            await self.episodeVM.loadNextPage()
+                        }
+                    }){
+                        Text("more episodes")
+                            .fontWeight(.semibold).font(.footnote)
+                    }.buttonStyle(.borderedProminent)
+                } else {
+                    Text("End of the list")
+                        .font(.footnote).foregroundStyle(.secondary)
+                }
+            }.frame(maxWidth: .infinity, alignment: .center)
+        }
+        .listRowBackground(Color.clear)
+        .listRowInsets(.init())
+        .listRowSeparator(.hidden)
+        .padding()
     }
 }
 
