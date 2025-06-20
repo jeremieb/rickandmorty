@@ -14,6 +14,64 @@ class NetworkService {
     /// Basic API URL
     private let baseURL = "https://rickandmortyapi.com/api"
     
+    /// Generic request method for any Codable type
+    ///
+    /// - Parameter url: The URL to fetch from
+    /// - Returns: Decoded object of type T
+    /// - Throws: NetworkError if any network or parsing error occurs
+    func request<T: Codable>(url: URL) async throws -> T {
+        let (data, response) = try await URLSession.shared.data(from: url)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw NetworkError.invalidResponse
+        }
+        
+        do {
+            let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase // To convert snake_case to camelCase
+            
+            return try decoder.decode(T.self, from: data)
+        } catch {
+            // Debug: Print detailed decoding error
+            print("❌ JSON Decoding Error for \(url):")
+            print("Error: \(error)")
+            
+            if let decodingError = error as? DecodingError {
+                switch decodingError {
+                    case .keyNotFound(let key, let context):
+                        print("Missing key: \(key.stringValue)")
+                        print("Context: \(context)")
+                    case .typeMismatch(let type, let context):
+                        print("Type mismatch: expected \(type)")
+                        print("Context: \(context)")
+                    case .valueNotFound(let type, let context):
+                        print("Value not found: \(type)")
+                        print("Context: \(context)")
+                    case .dataCorrupted(let context):
+                        print("Data corrupted: \(context)")
+                    @unknown default:
+                        print("Unknown decoding error")
+                }
+            }
+            print("---")
+            
+            throw NetworkError.decodingError(error)
+        }
+    }
+    
+    /// Fetch a specific character by ID from the Rick & Morty API
+    ///
+    /// - Parameter id: Character ID to fetch
+    /// - Returns: Character object
+    /// - Throws: NetworkError if any network or parsing error occurs
+    func fetchCharacter(id: Int) async throws -> Character {
+        guard let url = URL(string: "\(baseURL)/character/\(id)") else {
+            throw NetworkError.invalidURL
+        }
+        
+        return try await request(url: url)
+    }
+    
     /// Fetch a specific page of episodes from the Rick & Morty API
     ///
     /// - Parameter page: Page number to fetch (defaults to 1)
@@ -24,19 +82,7 @@ class NetworkService {
             throw NetworkError.invalidURL
         }
         
-        let (data, response) = try await URLSession.shared.data(from: url)
-        
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw NetworkError.invalidResponse
-        }
-        
-        do {
-            let decoder = JSONDecoder()
-            decoder.keyDecodingStrategy = .convertFromSnakeCase // To convert snake_case to camelCase
-            return try decoder.decode(EpisodesResponse.self, from: data)
-        } catch {
-            throw NetworkError.decodingError(error)
-        }
+        return try await request(url: url)
     }
     
     /// Convenience Error message

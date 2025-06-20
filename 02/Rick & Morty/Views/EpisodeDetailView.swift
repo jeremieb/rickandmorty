@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct EpisodeDetailView: View {
+
+    @EnvironmentObject private var characterVM: CharactersViewModel
     
     var selectedEpisode: Episode?
     
@@ -38,7 +40,7 @@ struct EpisodeDetailView: View {
                             }.accentColor(Color.primary)
                         }
                     }
-                    .sheet(item: $selectedCharacterID) { characterID in
+                    .sheet(item: $selectedCharacterID, onDismiss: self.characterVM.clearSelectedCharacter) { characterID in
                         CharacterDetailView(selectedCharacterID: characterID)
                     }
                 }

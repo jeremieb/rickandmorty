@@ -21,6 +21,7 @@
 		1E16170F2E0460A800D4BE1E /* LoadStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E16170E2E0460A800D4BE1E /* LoadStatus.swift */; };
 		1E90CB722E055BBE001D543F /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E90CB712E055BBE001D543F /* ErrorMessage.swift */; };
 		1E90CB7B2E0561BA001D543F /* Int.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E90CB7A2E0561BA001D543F /* Int.swift */; };
+		1E90CB7F2E056AD2001D543F /* CharacterDetailRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E90CB7E2E056AD2001D543F /* CharacterDetailRow.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +40,7 @@
 		1E16170E2E0460A800D4BE1E /* LoadStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadStatus.swift; sourceTree = "<group>"; };
 		1E90CB712E055BBE001D543F /* ErrorMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessage.swift; sourceTree = "<group>"; };
 		1E90CB7A2E0561BA001D543F /* Int.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Int.swift; sourceTree = "<group>"; };
+		1E90CB7E2E056AD2001D543F /* CharacterDetailRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterDetailRow.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -108,6 +110,7 @@
 				1E1616F92E04541A00D4BE1E /* EpisodeRow.swift */,
 				1E1616FB2E04542900D4BE1E /* EpisodeNumber.swift */,
 				1E90CB712E055BBE001D543F /* ErrorMessage.swift */,
+				1E90CB7E2E056AD2001D543F /* CharacterDetailRow.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -219,6 +222,7 @@
 				1E1617002E04546D00D4BE1E /* Episode.swift in Sources */,
 				1E90CB722E055BBE001D543F /* ErrorMessage.swift in Sources */,
 				1E1616F52E0453F800D4BE1E /* EpisodesListView.swift in Sources */,
+				1E90CB7F2E056AD2001D543F /* CharacterDetailRow.swift in Sources */,
 				1E1616FC2E04542900D4BE1E /* EpisodeNumber.swift in Sources */,
 				1E1616FE2E04544300D4BE1E /* CharacterDetailView.swift in Sources */,
 				1E1617052E04555700D4BE1E /* EpisodesViewModel.swift in Sources */,

@@ -7,21 +7,35 @@
 
 import Foundation
 
-struct Character: Identifiable {
+struct Character: Identifiable, Decodable, Encodable {
     var id: Int
     var name: String?
     var status: String?
     var species: String?
     var type: String?
     var gender: String?
-    var originName: String?
-    var originUrl: URL?
-    var locationName: String?
-    var locationUrl: URL?
+    var origin: Location?
+    var location: Location?
     var image: String?
-    var episodes: [String]?
-    var url: URL?
+    var episode: [String]?
+    var url: String?
     var created: String?
+}
+
+struct Location: Codable, Hashable {
+    let name: String
+    let url: String
+}
+
+extension Character {
+    var formattedStatus: CharacterStatus {
+        guard let status = status else { return .unknown }
+        return CharacterStatus(rawValue: status) ?? .unknown
+    }
+    var formattedGender: CharacterGender {
+        guard let gender = gender else { return .unknown }
+        return CharacterGender(rawValue: gender) ?? .unknown
+    }
 }
 
 extension Character {
@@ -34,7 +48,7 @@ extension Character {
     }
     
     /// Convenience genre
-    enum CharacterGenre: String {
+    enum CharacterGender: String {
         case female = "Female"
         case male = "Male"
         case genderless = "Genderless"

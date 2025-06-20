@@ -10,11 +10,12 @@ import SwiftUI
 struct ErrorMessage: View {
     @EnvironmentObject private var episodeVM: EpisodesViewModel
     
+    var title: String?
     var description: String?
     
     var body: some View {
         ContentUnavailableView {
-            Label("No episode available", systemImage: "exclamationmark.triangle")
+            Label(title ?? "No episode available", systemImage: "exclamationmark.triangle")
         } description: {
             Text(description ?? "Something went wrong")
         } actions: {
