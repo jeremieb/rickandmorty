@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct EpisodesListView: View {
     
+    @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var episodeVM: EpisodesViewModel
     
     /// Selected Episode
@@ -42,7 +44,7 @@ struct EpisodesListView: View {
                         .listStyle(.plain)
                         .refreshable {
                             Task {
-                                await self.episodeVM.loadEpisodes()
+                                await self.episodeVM.loadEpisodes(forceRefresh: true)
                             }
                         }
                         .navigationDestination(item: $selectedEpisode) { episode in
@@ -52,6 +54,9 @@ struct EpisodesListView: View {
                         ErrorMessage(description: error?.localizedDescription ?? "Something went wrong.")
                 }
             }.navigationTitle("Rick & Morty")
+        }
+        .onAppear {
+            self.episodeVM.setModelContext(modelContext)
         }
     }
     
@@ -66,15 +71,21 @@ struct EpisodesListView: View {
     @ViewBuilder private func EndOfTheList() -> some View {
         Section {
             VStack {
-                if episodeVM.data?.info.next != nil {
-                    Button(action: {
-                        Task {
-                            await self.episodeVM.loadNextPage()
-                        }
-                    }){
-                        Text("more episodes")
-                            .fontWeight(.semibold).font(.footnote)
-                    }.buttonStyle(.borderedProminent)
+                if hasMoreEpisodes {
+                    /// Avoid the full page refresh -> ScrollView position is lost 😩
+                    if episodeVM.isLoadingNextPage {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                    } else {
+                        Button(action: {
+                            Task {
+                                await self.episodeVM.loadNextPage()
+                            }
+                        }){
+                            Text("more episodes")
+                                .fontWeight(.semibold).font(.footnote)
+                        }.buttonStyle(.borderedProminent)
+                    }
                 } else {
                     Text("End of the list")
                         .font(.footnote).foregroundStyle(.secondary)
@@ -85,6 +96,13 @@ struct EpisodesListView: View {
         .listRowInsets(.init())
         .listRowSeparator(.hidden)
         .padding()
+    }
+    
+    // MARK: Do we have all the episodes?
+    private var hasMoreEpisodes: Bool {
+        let currentCount = episodeVM.episodes.count
+        let totalCount = episodeVM.totalEpisodesCount
+        return currentCount < totalCount && totalCount > 0
     }
 }
 

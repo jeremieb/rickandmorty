@@ -1,6 +1,5 @@
-//___FILEHEADER___
-
 import SwiftUI
+import SwiftData
 
 @main
 struct MainView: App {
@@ -11,6 +10,7 @@ struct MainView: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .modelContainer(for: Episode.self)
                 .environmentObject(episodeVM)
                 .environmentObject(characterVM)
         }
