@@ -12,6 +12,7 @@ struct EpisodesListView: View {
     
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var episodeVM: EpisodesViewModel
+    @EnvironmentObject private var characterVM: CharactersViewModel
     
     /// Selected Episode
     @State private var selectedEpisode: Episode?
@@ -44,6 +45,8 @@ struct EpisodesListView: View {
                         .listStyle(.plain)
                         .refreshable {
                             Task {
+                                // Reset both episodes and characters data
+                                self.characterVM.resetPersistedCharacterData()
                                 await self.episodeVM.loadEpisodes(forceRefresh: true)
                             }
                         }
@@ -57,6 +60,7 @@ struct EpisodesListView: View {
         }
         .onAppear {
             self.episodeVM.setModelContext(modelContext)
+            self.characterVM.setModelContext(modelContext)
         }
     }
     

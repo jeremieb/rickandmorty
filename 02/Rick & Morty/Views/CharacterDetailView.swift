@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct CharacterDetailView: View {
     
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
     
     @EnvironmentObject private var characterVM: CharactersViewModel
     
@@ -114,7 +116,8 @@ struct CharacterDetailView: View {
                 }
                 .textSelection(.enabled)
             }
-            .task {
+            .onAppear {
+                self.characterVM.setModelContext(modelContext)
                 Task {
                     await self.characterVM.loadCharacter(id: selectedCharacterID)
                 }
