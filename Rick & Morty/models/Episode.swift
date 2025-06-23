@@ -27,7 +27,7 @@ class Episode: Codable, Identifiable, Hashable {
     var name: String?
     var air_date: String?
     var episode: String?
-    var charactersURLs: [String]?
+    private var charactersURLsString: String?
     var url: String?
     var created: String?
     
@@ -36,7 +36,7 @@ class Episode: Codable, Identifiable, Hashable {
         self.name = name
         self.air_date = air_date
         self.episode = episode
-        self.charactersURLs = charactersURLs
+        self.charactersURLsString = charactersURLs?.joined(separator: ",")
         self.url = url
         self.created = created
     }
@@ -45,6 +45,17 @@ class Episode: Codable, Identifiable, Hashable {
         case id, name, air_date, episode, characters, url, created
     }
     
+    /// Computed property to get/set charactersURLs as [String]?
+    var charactersURLs: [String]? {
+        get {
+            guard let charactersURLsString = charactersURLsString, !charactersURLsString.isEmpty else { return nil }
+            return charactersURLsString.split(separator: ",").map { String($0) }
+        }
+        set {
+            charactersURLsString = newValue?.joined(separator: ",")
+        }
+    }
+
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(Int.self, forKey: .id)
@@ -52,8 +63,10 @@ class Episode: Codable, Identifiable, Hashable {
         air_date = try container.decodeIfPresent(String.self, forKey: .air_date)
         episode = try container.decodeIfPresent(String.self, forKey: .episode)
         
+        // Convert [URL] to comma-separated string
         let urlArray = try container.decodeIfPresent([URL].self, forKey: .characters)
-        charactersURLs = urlArray?.map { $0.absoluteString }
+        let charactersURLsArray = urlArray?.map { $0.absoluteString }
+        charactersURLsString = charactersURLsArray?.joined(separator: ",")
         
         if let urlValue = try container.decodeIfPresent(URL.self, forKey: .url) {
             url = urlValue.absoluteString
@@ -69,8 +82,10 @@ class Episode: Codable, Identifiable, Hashable {
         try container.encodeIfPresent(air_date, forKey: .air_date)
         try container.encodeIfPresent(episode, forKey: .episode)
         
-        if let charactersURLs = charactersURLs {
-            let urlArray = charactersURLs.compactMap { URL(string: $0) }
+        /// Convert comma-separated string back to [URL] for encoding
+        if let charactersURLsString = charactersURLsString, !charactersURLsString.isEmpty {
+            let charactersURLsArray = charactersURLsString.split(separator: ",").map { String($0) }
+            let urlArray = charactersURLsArray.compactMap { URL(string: $0) }
             try container.encode(urlArray, forKey: .characters)
         }
         

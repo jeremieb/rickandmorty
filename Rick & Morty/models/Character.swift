@@ -21,7 +21,7 @@ class Character: Identifiable, Codable, Hashable, @unchecked Sendable {
     var locationName: String?
     var locationURL: String?
     var image: String?
-    var episodeURLs: [String]?
+    private var episodeURLsString: String?
     var url: String?
     var created: String?
     
@@ -37,7 +37,7 @@ class Character: Identifiable, Codable, Hashable, @unchecked Sendable {
         self.locationName = locationName
         self.locationURL = locationURL
         self.image = image
-        self.episodeURLs = episodeURLs
+        self.episodeURLsString = episodeURLs?.joined(separator: ",")
         self.url = url
         self.created = created
     }
@@ -45,6 +45,18 @@ class Character: Identifiable, Codable, Hashable, @unchecked Sendable {
     enum CodingKeys: String, CodingKey {
         case id, name, status, species, type, gender, origin, location, image, episode, url, created
     }
+    
+    /// Computed property to get/set episodeURLs as [String]?
+    var episodeURLs: [String]? {
+        get {
+            guard let episodeURLsString = episodeURLsString, !episodeURLsString.isEmpty else { return nil }
+            return episodeURLsString.split(separator: ",").map { String($0) }
+        }
+        set {
+            episodeURLsString = newValue?.joined(separator: ",")
+        }
+    }
+
     
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -55,21 +67,25 @@ class Character: Identifiable, Codable, Hashable, @unchecked Sendable {
         type = try container.decodeIfPresent(String.self, forKey: .type)
         gender = try container.decodeIfPresent(String.self, forKey: .gender)
         
-        // Handle origin location
+        /// Handle origin location
         if let origin = try container.decodeIfPresent(Location.self, forKey: .origin) {
             originName = origin.name
             originURL = origin.url
         }
         
-        // Handle current location
+        /// Handle current location
         if let location = try container.decodeIfPresent(Location.self, forKey: .location) {
             locationName = location.name
             locationURL = location.url
         }
         
         image = try container.decodeIfPresent(String.self, forKey: .image)
-        episodeURLs = try container.decodeIfPresent([String].self, forKey: .episode)
+        
+        /// Convert [String] to comma-separated string
+        let episodeURLsArray = try container.decodeIfPresent([String].self, forKey: .episode)
+        episodeURLsString = episodeURLsArray?.joined(separator: ",")
         url = try container.decodeIfPresent(String.self, forKey: .url)
+        
         created = try container.decodeIfPresent(String.self, forKey: .created)
     }
     
@@ -82,20 +98,26 @@ class Character: Identifiable, Codable, Hashable, @unchecked Sendable {
         try container.encodeIfPresent(type, forKey: .type)
         try container.encodeIfPresent(gender, forKey: .gender)
         
-        // Encode origin
+        /// Encode origin
         if let originName = originName, let originURL = originURL {
             let origin = Location(name: originName, url: originURL)
             try container.encode(origin, forKey: .origin)
         }
         
-        // Encode location
+        /// Encode location
         if let locationName = locationName, let locationURL = locationURL {
             let location = Location(name: locationName, url: locationURL)
             try container.encode(location, forKey: .location)
         }
         
         try container.encodeIfPresent(image, forKey: .image)
-        try container.encodeIfPresent(episodeURLs, forKey: .episode)
+        
+        /// Convert comma-separated string back to [String] for encoding
+        if let episodeURLsString = episodeURLsString, !episodeURLsString.isEmpty {
+            let episodeURLsArray = episodeURLsString.split(separator: ",").map { String($0) }
+            try container.encode(episodeURLsArray, forKey: .episode)
+        }
+
         try container.encodeIfPresent(url, forKey: .url)
         try container.encodeIfPresent(created, forKey: .created)
     }
