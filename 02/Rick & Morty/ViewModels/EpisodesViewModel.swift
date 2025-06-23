@@ -38,7 +38,7 @@ class EpisodesViewModel: ObservableObject {
         
         /// Load the saved total count
         /// Used when coming back after killing the app
-        /// we don't have the info with the next page URL.
+        /// because we don't have the info with the next page URL.
         totalEpisodesCount = UserDefaults.standard.integer(forKey: totalEpisodesCountKey)
         
         Task {
@@ -53,9 +53,8 @@ class EpisodesViewModel: ObservableObject {
         do {
             let descriptor = FetchDescriptor<Episode>(sortBy: [SortDescriptor(\.id)])
             savedEpisodes = try modelContext.fetch(descriptor)
-            print("Loaded \(savedEpisodes.count) saved episodes from SwiftData")
         } catch {
-            print("Failed to load saved episodes: \(error)")
+            print("🔴 Failed to load saved episodes: \(error)")
             savedEpisodes = []
         }
     }
@@ -64,13 +63,13 @@ class EpisodesViewModel: ObservableObject {
     @MainActor
     func loadEpisodes(forceRefresh: Bool = false) async {
         guard modelContext != nil else {
-            print("No model context available")
+            print("🔴 No model context available")
             return
         }
         
-        // If force refresh, clear all data and fetch from API
+        /// If force refresh, clear all data and fetch from API
         if forceRefresh {
-            print("Force refresh requested - clearing cache")
+            print("🔶 Force refresh requested - clearing cache")
             clearPersistedEpisodes()
             loadSavedEpisodes()
         } else {
@@ -78,22 +77,22 @@ class EpisodesViewModel: ObservableObject {
             loadSavedEpisodes()
         }
         
-        // Use saved episodes only if not force refreshing and data is not expired
+        /// Use saved episodes only if not force refreshing and data is not expired
         if !forceRefresh && !savedEpisodes.isEmpty && !isDataExpired() {
-            print("Using \(savedEpisodes.count) saved episodes (not expired)")
+            print("📺 Using \(savedEpisodes.count) saved episodes (not expired)")
             self.episodes = savedEpisodes
             self.status = .loaded(())
             return
         }
         
-        print("Fetching episodes from API (force refresh: \(forceRefresh))")
+        print("📺 Fetching episodes from API (force refresh: \(forceRefresh))")
         
         do {
             self.status = .loading
             let response = try await networkService.fetchEpisodes()
             self.data = response
             
-            // Save total count to UserDefaults
+            /// Save total count to UserDefaults
             UserDefaults.standard.set(response.info.count, forKey: totalEpisodesCountKey)
             
             if let modelContext = modelContext {
@@ -101,7 +100,7 @@ class EpisodesViewModel: ObservableObject {
                     modelContext.insert(episode)
                 }
                 try modelContext.save()
-                print("Saved \(response.results.count) episodes to SwiftData")
+                print("📺 Saved \(response.results.count) episodes to SwiftData")
             }
             
             self.episodes = response.results
@@ -111,26 +110,26 @@ class EpisodesViewModel: ObservableObject {
             self.status = .loaded(())
         } catch {
             if !savedEpisodes.isEmpty {
-                print("API failed, using \(savedEpisodes.count) saved episodes")
+                print("🔴 API failed, using \(savedEpisodes.count) saved episodes")
                 self.episodes = savedEpisodes
                 self.status = .loaded(())
             } else {
                 self.status = .failed(error)
             }
-            print("Error fetching episodes: \(error.localizedDescription)")
+            print("🔴 Error fetching episodes: \(error.localizedDescription)")
         }
     }
     
     /// Check if data is expired (older than 7 days)
     private func isDataExpired() -> Bool {
         guard let lastFetchDate = UserDefaults.standard.object(forKey: lastFetchKey) as? Date else {
-            print("No last fetch date found - data considered expired")
+            print("🔶 No last fetch date found - data considered expired")
             return true
         }
         
         let timeSinceLastFetch = Date().timeIntervalSince(lastFetchDate)
         let isExpired = timeSinceLastFetch > maxCacheAge
-        print("Data age: \(timeSinceLastFetch) seconds, expired: \(isExpired)")
+        print("💾 Data age: \(timeSinceLastFetch) seconds, expired: \(isExpired)")
         return isExpired
     }
     
@@ -138,7 +137,7 @@ class EpisodesViewModel: ObservableObject {
     private func clearDataIfNeeded() {
         if isDataExpired() {
             clearPersistedEpisodes()
-            print("Cleared old episode data (older than 7 days)")
+            print("🔴 Cleared old episode data (older than 7 days)")
         }
     }
     
@@ -150,9 +149,9 @@ class EpisodesViewModel: ObservableObject {
             try modelContext.delete(model: Episode.self)
             try modelContext.save()
             savedEpisodes = []
-            print("Cleared all persisted episodes")
+            print("📺 Cleared all persisted episodes")
         } catch {
-            print("Failed to clear persisted episodes: \(error)")
+            print("🔴 Failed to clear persisted episodes: \(error)")
         }
     }
     
@@ -163,13 +162,13 @@ class EpisodesViewModel: ObservableObject {
         let totalEpisodesCount = UserDefaults.standard.integer(forKey: totalEpisodesCountKey)
         
         if currentEpisodeCount >= totalEpisodesCount {
-            print("All episodes already loaded (\(currentEpisodeCount)/\(totalEpisodesCount))")
+            print("📺 All episodes already loaded (\(currentEpisodeCount)/\(totalEpisodesCount))")
             return
         }
         
         let nextPage = (currentEpisodeCount / 20) + 1
         
-        print("Loading page \(nextPage) (current episodes: \(currentEpisodeCount), total: \(totalEpisodesCount))")
+        print("📺 Loading page \(nextPage) (current episodes: \(currentEpisodeCount), total: \(totalEpisodesCount))")
         
         do {
             self.isLoadingNextPage = true
@@ -184,11 +183,11 @@ class EpisodesViewModel: ObservableObject {
             }
             
             self.episodes.append(contentsOf: response.results)
-            print("Added \(response.results.count) episodes from page \(nextPage)")
+            print("📺 Added \(response.results.count) episodes from page \(nextPage)")
             self.isLoadingNextPage = false
         } catch {
             self.isLoadingNextPage = false
-            print("Error fetching page \(nextPage): \(error.localizedDescription)")
+            print("🔴 Error fetching page \(nextPage): \(error.localizedDescription)")
         }
     }
 }

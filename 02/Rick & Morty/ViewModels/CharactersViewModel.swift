@@ -41,7 +41,7 @@ class CharactersViewModel: ObservableObject {
         
         status = .loading
         
-        // Try to load from local storage first
+        /// We try to load from local storage first
         if let savedCharacter = loadSavedCharacter(id: id, context: modelContext) {
             if !isCharacterDataExpired(id: id) {
                 print("👽 Using saved character \(id) (not expired)")
@@ -50,23 +50,22 @@ class CharactersViewModel: ObservableObject {
                 return
             }
         }
-        
-        // If no saved data or expired, fetch from API
+
         print("👽 Fetching character \(id) from API")
         
         do {
             let character = try await networkService.fetchCharacter(id: id)
             
-            // Save to SwiftData
+            /// Saving to SwiftData
             saveCharacterToStorage(character: character, context: modelContext)
             
-            // Update last fetch date
+            /// When the last loading was?
             UserDefaults.standard.set(Date(), forKey: lastCharacterFetchKey + "\(id)")
             
             selectedCharacter = character
             status = .loaded(())
         } catch {
-            // If API fails, try to use saved data (even if expired)
+            /// If API fails, try to use saved data (even if expired)
             if let savedCharacter = loadSavedCharacter(id: id, context: modelContext) {
                 print("🔴 API failed, using saved character \(id)")
                 selectedCharacter = savedCharacter
@@ -87,19 +86,10 @@ class CharactersViewModel: ObservableObject {
         }
         
         do {
-            // Delete all characters from SwiftData
+            /// Delete all characters from SwiftData
             try modelContext.delete(model: Character.self)
             try modelContext.save()
-            
-            // Clear all character UserDefaults keys
-            let defaults = UserDefaults.standard
-            let allKeys = defaults.dictionaryRepresentation().keys
-            let characterKeys = allKeys.filter { $0.hasPrefix(lastCharacterFetchKey) }
-            
-            for key in characterKeys {
-                defaults.removeObject(forKey: key)
-            }
-            
+
             print("👽 Reset all persisted character data")
         } catch {
             print("🔴 Failed to reset persisted character data: \(error)")
@@ -115,7 +105,6 @@ class CharactersViewModel: ObservableObject {
                 }
             )
             let savedCharacters = try context.fetch(descriptor)
-            print("👽 Loaded character from storage.")
             return savedCharacters.first
         } catch {
             print("🔴 Failed to load saved character \(id): \(error)")
@@ -150,7 +139,7 @@ class CharactersViewModel: ObservableObject {
         
         let timeSinceLastFetch = Date().timeIntervalSince(lastFetchDate)
         let isExpired = timeSinceLastFetch > maxCacheAge
-        print("👽🔶 Character \(id) data age: \(timeSinceLastFetch) seconds, expired: \(isExpired)")
+        print("💾 Character \(id) data age: \(timeSinceLastFetch) seconds, expired: \(isExpired)")
         return isExpired
     }
     
