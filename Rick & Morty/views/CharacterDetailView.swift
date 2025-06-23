@@ -6,100 +6,129 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct CharacterDetailView: View {
     
     @Environment(\.dismiss) private var dismiss
-
+    @Environment(\.modelContext) private var modelContext
     
-    let characterID: Int?
-    @ObservedObject var characterViewModel: CharacterViewModel
+    @EnvironmentObject private var characterVM: CharactersViewModel
     
-    private var character: Character? {
-        guard let characterID = characterID else { return nil }
-        return characterViewModel.character(id: characterID)
-    }
-    
-    private var isLoading: Bool {
-        guard let characterID = characterID else { return false }
-        return characterViewModel.isLoading(id: characterID)
-    }
+    var selectedCharacterID: Int?
     
     var body: some View {
-        NavigationView {
-            Group {
-                if let character = character {
-                    // Character is loaded - show details
-                    ScrollView {
-                        AsyncImage(url: URL(string: character.image)) { image in
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                        } placeholder: {
+        if let selectedCharacterID {
+            NavigationStack {
+                Group {
+                    switch characterVM.status {
+                        case .idle:
+                            ErrorMessage(description: "No character selected")
+                        case .loading:
                             ProgressView()
-                        }
-                        .frame(width: 200, height: 200)
-                        .clipShape(Circle())
-                        
-                        // Character details
-                        VStack(alignment: .leading, spacing: 12) {
-                            
-                            Text("Status: \(character.status)")
-                            
-                            Text("Species: \(character.species)")
-                            
-                            Text("Type: \(character.type)")
-                            
-                            Text("Gender: \(character.gender)")
-                            
-                            Text("Origin: \(character.originName)")
-                            
-                            Text("Location: \(character.locationName)")
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding()
+                        case .loaded():
+                            if let character = characterVM.selectedCharacter {
+                                List {
+                                    Section {
+                                        VStack {
+                                            if let imageURL = character.image {
+                                                AsyncImage(url: URL(string: imageURL)) { image in
+                                                    image
+                                                        .resizable()
+                                                        .aspectRatio(contentMode: .fit)
+                                                } placeholder: {
+                                                    ProgressView()
+                                                }
+                                                .frame(width: 200, height: 200)
+                                                .clipShape(Circle())
+                                            }
+                                        }.frame(maxWidth: .infinity, alignment: .center)
+                                    }
+                                    .listRowBackground(Color.clear)
+                                    
+                                    Section {
+                                        switch character.formattedStatus {
+                                            case .alive:
+                                                CharacterDetailRow(label: "Status", value: "👍🏼 Alive")
+                                            case .dead:
+                                                CharacterDetailRow(label: "Status", value: "☠️ Dead")
+                                            case .unknown:
+                                                CharacterDetailRow(label: "Status", value: "🤨 Unknown")
+                                        }
+                                        if let species = character.species {
+                                            CharacterDetailRow(label: "Species", value: species)
+                                        }
+                                        if let type = character.type {
+                                            CharacterDetailRow(label: "Type", value: !type.isEmpty ? type : "-")
+                                            /// Some characters have empty strings...
+                                        }
+                                        switch character.formattedGender {
+                                            case .female:
+                                                CharacterDetailRow(label: "Gender", value: "♀ Female")
+                                            case .male:
+                                                CharacterDetailRow(label: "Gender", value: "♂ Male")
+                                            case .genderless:
+                                                CharacterDetailRow(label: "Gender", value: "⚤ Genderless")
+                                            case .unknown:
+                                                CharacterDetailRow(label: "Gender", value: "Unknown")
+                                        }
+                                        if let originName = character.origin?.name {
+                                            CharacterDetailRow(label: "Origin", value: originName)
+                                        }
+                                        if let episodesCount = character.episode?.count {
+                                            CharacterDetailRow(label: "Appearance", value: "\(episodesCount) \(episodesCount <= 1 ? "episode" : "episodes")")
+                                        }
+                                    }
+                                    
+                                    Section {
+                                        Button(action: {
+                                            self.characterVM.exportCharacter()
+                                        }){
+                                            Label("Save this character", systemImage: "square.and.arrow.down")
+                                                .fontWeight(.semibold).foregroundStyle(.primary)
+                                                .frame(maxWidth: .infinity, alignment: .center)
+                                        }.buttonStyle(.borderedProminent)
+                                    }
+                                    .listRowBackground(Color.clear)
+                                    .listRowInsets(.init())
+                                    .fileExporter(
+                                        isPresented: $characterVM.showingExporter,
+                                        document: characterVM.exportDocument,
+                                        contentType: .plainText,
+                                        defaultFilename: characterVM.exportFileName
+                                    ) { _ in }
+                                }.navigationTitle(character.name ?? "No name")
+                            } else {
+                                ErrorMessage(description: "Error loading this character.")
+                            }
+                        case .failed(let error):
+                            ErrorMessage(title: "No Character", description: error?.localizedDescription ?? "Error loading this character.")
                     }
-                    .navigationTitle(character.name)
-                } else if isLoading {
-                    // Character is loading - show loading indicator
-                    VStack(spacing: 20) {
-                        ProgressView()
-                            .scaleEffect(1.5)
-                        Text("Loading character...")
-                            .font(.title2)
-                    }
-                } else {
-                    // No character or error - show error state
-                    ContentUnavailableView(
-                        "No Character",
-                        systemImage: "person.slash",
-                        description: Text("Something went wrong when loading the character... 👽")
-                    )
                 }
-            }
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: {
-                        dismiss()
-                    }){
-                        Image(systemName: "xmark.circle.fill")
+                .toolbar {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button(action: {
+                            dismiss()
+                        }){
+                            Image(systemName: "xmark.circle.fill")
+                        }
                     }
                 }
+                .textSelection(.enabled)
             }
             .onAppear {
-                // Load character when view appears if not already loaded
-                if let characterID = characterID, character == nil && !isLoading {
-                    Task {
-                        await characterViewModel.loadCharacter(id: characterID)
-                    }
+                self.characterVM.setModelContext(modelContext)
+                Task {
+                    await self.characterVM.loadCharacter(id: selectedCharacterID)
                 }
             }
+        } else {
+            ErrorMessage(description: "No character selected")
         }
     }
 }
-//
-//#Preview {
-//    // Create a mock character view model for preview
-//    let mockViewModel = CharacterViewModel(modelContext: ModelContext(try! ModelContainer(for: Character.self)))
-//    return CharacterDetailView(characterID: 1, characterViewModel: mockViewModel)
-//}
+
+#Preview {
+    CharacterDetailView(selectedCharacterID: 1)
+        .environmentObject(CharactersViewModel())
+}

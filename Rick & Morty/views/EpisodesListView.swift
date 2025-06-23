@@ -2,133 +2,111 @@
 //  EpisodesListView.swift
 //  Rick & Morty
 //
-//  Created by Jeremie Berduck on 17/06/2025.
+//  Created by Jeremie Berduck on 19/06/2025.
 //
 
 import SwiftUI
 import SwiftData
 
 struct EpisodesListView: View {
-    @StateObject private var viewModel: EpisodesViewModel
+    
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var episodeVM: EpisodesViewModel
+    @EnvironmentObject private var characterVM: CharactersViewModel
     
+    /// Selected Episode
     @State private var selectedEpisode: Episode?
-    
-    init() {
-        self._viewModel = StateObject(wrappedValue: EpisodesViewModel(modelContext: ModelContext(try! ModelContainer(for: Episode.self))))
-    }
     
     var body: some View {
         NavigationStack {
-            VStack {
-                if viewModel.isLoading && viewModel.episodes.isEmpty {
-                    ProgressView("Loading episodes...")
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if viewModel.episodes.isEmpty {
-                    ScrollView {
-                        ContentUnavailableView(
-                            "No Episodes",
-                            systemImage: "tv",
-                            description: Text("Pull to refresh or check your internet connection")
-                        )
-                    }
-                    .refreshable {
-                        await viewModel.refreshEpisodes()
-                    }
-                } else {
-                    List {
-                        ForEach(groupedEpisodes.keys.sorted(), id: \.self) { seasonNumber in
-                            Section(header: Text("Season \(seasonNumber)")) {
-                                ForEach(groupedEpisodes[seasonNumber] ?? [], id: \.id) { episode in
-                                    Button(action: {
-                                        self.selectedEpisode = episode
-                                    }){
-                                        EpisodeRow(episode: episode)
+            Group {
+                switch episodeVM.status {
+                    case .idle:
+                        EmptyView()
+                    case .loading:
+                        ProgressView()
+                    case .loaded():
+                        List {
+                            ForEach(groupedEpisodes.keys.sorted(), id: \.self) { seasonNumber in
+                                Section(header: Text("Season \(seasonNumber)")) {
+                                    ForEach(groupedEpisodes[seasonNumber] ?? [], id: \.id) { episode in
+                                        Button(action: {
+                                            self.selectedEpisode = episode
+                                        }){
+                                            EpisodeRow(episode: episode)
+                                        }
                                     }
                                 }
                             }
+                            
+                            /// if we have a info.next object, there is a second page
+                            EndOfTheList()
                         }
-                        
-                        /// Load more or not
-                        EndList()
-                    }
-                    .refreshable {
-                        await viewModel.refreshEpisodes()
-                    }
-                    .listStyle(.plain)
-                    .navigationDestination(item: $selectedEpisode) { episode in
-                        EpisodeDetailView(selectedEpisode: episode)
-                    }
-                }
-                
-                if let errorMessage = viewModel.errorMessage {
-                    Text(errorMessage)
-                        .foregroundColor(.red)
-                        .padding()
-                }
-            }
-            .navigationTitle("Rick & Morty")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    if viewModel.shouldShowRefreshHint {
-                        Button("Refresh") {
+                        .listStyle(.plain)
+                        .refreshable {
                             Task {
-                                await viewModel.refreshEpisodes()
+                                // Reset both episodes and characters data
+                                self.characterVM.resetPersistedCharacterData()
+                                await self.episodeVM.loadEpisodes(forceRefresh: true)
                             }
                         }
-                        .foregroundColor(.orange)
-                    }
+                        .navigationDestination(item: $selectedEpisode) { episode in
+                            EpisodeDetailView(selectedEpisode: episode)
+                        }
+                    case .failed(let error):
+                        ErrorMessage(description: error?.localizedDescription ?? "Something went wrong.")
                 }
-            }
-        }
-        .task {
-            await viewModel.loadEpisodes()
+            }.navigationTitle("Rick & Morty")
         }
         .onAppear {
-            viewModel.modelContext = modelContext
+            self.episodeVM.setModelContext(modelContext)
+            self.characterVM.setModelContext(modelContext)
         }
-    }
-    
-    // MARK: End list
-    @ViewBuilder
-    private func EndList() -> some View {
-        Section {
-            if viewModel.hasMorePages {
-                Button(action: {
-                    Task {
-                        await viewModel.loadNextPage()
-                    }
-                }) {
-                    HStack {
-                        if viewModel.isLoadingMore {
-                            ProgressView().scaleEffect(0.8)
-                            Text("Loading page \(viewModel.currentPage + 1)...")
-                        } else {
-                            Image(systemName: "arrow.down.circle.fill").font(.body)
-                            Text("Next")
-                        }
-                    }
-                    .font(.caption)
-                    .foregroundColor(viewModel.isLoadingMore ? .secondary : .accentColor)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                }.disabled(viewModel.isLoadingMore)
-            } else if !viewModel.episodes.isEmpty {
-                Text("Stay tuned for more episodes soon...")
-                    .font(.caption).foregroundColor(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding()
-            }
-        }
-        .listRowInsets(.init())
-        .listRowBackground(Color.clear)
-        .listRowSeparator(.hidden)
     }
     
     // MARK: Grouping episodes per season
     private var groupedEpisodes: [Int: [Episode]] {
-        Dictionary(grouping: viewModel.episodes) { episode in
+        Dictionary(grouping: episodeVM.episodes) { episode in
             episode.seasonNumber ?? 0
         }
+    }
+    
+    // MARK: End of the list
+    @ViewBuilder private func EndOfTheList() -> some View {
+        Section {
+            VStack {
+                if hasMoreEpisodes {
+                    /// Avoid the full page refresh -> ScrollView position is lost 😩
+                    if episodeVM.isLoadingNextPage {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                    } else {
+                        Button(action: {
+                            Task {
+                                await self.episodeVM.loadNextPage()
+                            }
+                        }){
+                            Text("more episodes")
+                                .fontWeight(.semibold).font(.footnote)
+                        }.buttonStyle(.borderedProminent)
+                    }
+                } else {
+                    Text("End of the list")
+                        .font(.footnote).foregroundStyle(.secondary)
+                }
+            }.frame(maxWidth: .infinity, alignment: .center)
+        }
+        .listRowBackground(Color.clear)
+        .listRowInsets(.init())
+        .listRowSeparator(.hidden)
+        .padding()
+    }
+    
+    // MARK: Do we have all the episodes?
+    private var hasMoreEpisodes: Bool {
+        let currentCount = episodeVM.episodes.count
+        let totalCount = episodeVM.totalEpisodesCount
+        return currentCount < totalCount && totalCount > 0
     }
 }
 

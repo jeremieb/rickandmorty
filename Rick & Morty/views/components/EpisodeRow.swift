@@ -2,12 +2,13 @@
 //  EpisodeRow.swift
 //  Rick & Morty
 //
-//  Created by Jeremie Berduck on 17/06/2025.
+//  Created by Jeremie Berduck on 19/06/2025.
 //
 
 import SwiftUI
 
 struct EpisodeRow: View {
+    
     let episode: Episode
     
     var body: some View {

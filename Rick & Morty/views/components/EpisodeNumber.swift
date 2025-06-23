@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct EpisodeNumber: View {
-    
     var number: String?
     
     var body: some View {
