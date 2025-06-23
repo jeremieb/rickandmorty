@@ -22,7 +22,7 @@ struct EpisodesListView: View {
             Group {
                 switch episodeVM.status {
                     case .idle:
-                        ErrorMessage()
+                        EmptyView()
                     case .loading:
                         ProgressView()
                     case .loaded():
