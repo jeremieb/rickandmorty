@@ -56,7 +56,6 @@ class Character: Identifiable, Codable, Hashable, @unchecked Sendable {
             episodeURLsString = newValue?.joined(separator: ",")
         }
     }
-
     
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)

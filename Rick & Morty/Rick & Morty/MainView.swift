@@ -10,7 +10,7 @@ struct MainView: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .modelContainer(for: [Episode.self, Character.self])
+                .modelContainer(for: [Episode.self, Character.self], isAutosaveEnabled: true, isUndoEnabled: false)
                 .environmentObject(episodeVM)
                 .environmentObject(characterVM)
         }
