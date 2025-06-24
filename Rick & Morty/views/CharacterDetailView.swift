@@ -29,74 +29,11 @@ struct CharacterDetailView: View {
                         case .loaded():
                             if let character = characterVM.selectedCharacter {
                                 List {
-                                    Section {
-                                        VStack {
-                                            if let imageURL = character.image {
-                                                AsyncImage(url: URL(string: imageURL)) { image in
-                                                    image
-                                                        .resizable()
-                                                        .aspectRatio(contentMode: .fit)
-                                                } placeholder: {
-                                                    ProgressView()
-                                                }
-                                                .frame(width: 200, height: 200)
-                                                .clipShape(Circle())
-                                            }
-                                        }.frame(maxWidth: .infinity, alignment: .center)
-                                    }
-                                    .listRowBackground(Color.clear)
+                                    CharacterPicture(character: character)
                                     
-                                    Section {
-                                        switch character.formattedStatus {
-                                            case .alive:
-                                                CharacterDetailRow(label: "Status", value: "👍🏼 Alive")
-                                            case .dead:
-                                                CharacterDetailRow(label: "Status", value: "☠️ Dead")
-                                            case .unknown:
-                                                CharacterDetailRow(label: "Status", value: "🤨 Unknown")
-                                        }
-                                        if let species = character.species {
-                                            CharacterDetailRow(label: "Species", value: species)
-                                        }
-                                        if let type = character.type {
-                                            CharacterDetailRow(label: "Type", value: !type.isEmpty ? type : "-")
-                                            /// Some characters have empty strings...
-                                        }
-                                        switch character.formattedGender {
-                                            case .female:
-                                                CharacterDetailRow(label: "Gender", value: "♀ Female")
-                                            case .male:
-                                                CharacterDetailRow(label: "Gender", value: "♂ Male")
-                                            case .genderless:
-                                                CharacterDetailRow(label: "Gender", value: "⚤ Genderless")
-                                            case .unknown:
-                                                CharacterDetailRow(label: "Gender", value: "Unknown")
-                                        }
-                                        if let originName = character.origin?.name {
-                                            CharacterDetailRow(label: "Origin", value: originName)
-                                        }
-                                        if let episodesCount = character.episode?.count {
-                                            CharacterDetailRow(label: "Appearance", value: "\(episodesCount) \(episodesCount <= 1 ? "episode" : "episodes")")
-                                        }
-                                    }
+                                    CharacterDetail(character: character)
                                     
-                                    Section {
-                                        Button(action: {
-                                            self.characterVM.exportCharacter()
-                                        }){
-                                            Label("Save this character", systemImage: "square.and.arrow.down")
-                                                .fontWeight(.semibold).foregroundStyle(.primary)
-                                                .frame(maxWidth: .infinity, alignment: .center)
-                                        }.buttonStyle(.borderedProminent)
-                                    }
-                                    .listRowBackground(Color.clear)
-                                    .listRowInsets(.init())
-                                    .fileExporter(
-                                        isPresented: $characterVM.showingExporter,
-                                        document: characterVM.exportDocument,
-                                        contentType: .plainText,
-                                        defaultFilename: characterVM.exportFileName
-                                    ) { _ in }
+                                    CharacterExport(character: character)
                                 }.navigationTitle(character.name ?? "No name")
                             } else {
                                 ErrorMessage(description: "Error loading this character.")
@@ -125,6 +62,87 @@ struct CharacterDetailView: View {
         } else {
             ErrorMessage(description: "No character selected")
         }
+    }
+    
+    // MARK: Character Picture
+    @ViewBuilder
+    private func CharacterPicture(character: Character) -> some View {
+        Section {
+            VStack {
+                if let imageURL = character.image {
+                    AsyncImage(url: URL(string: imageURL)) { image in
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    } placeholder: {
+                        ProgressView()
+                    }
+                    .frame(width: 200, height: 200)
+                    .clipShape(Circle())
+                }
+            }.frame(maxWidth: .infinity, alignment: .center)
+        }
+        .listRowBackground(Color.clear)
+    }
+    
+    // MARK: Character Detail
+    @ViewBuilder
+    private func CharacterDetail(character: Character) -> some View {
+        Section {
+            switch character.formattedStatus {
+                case .alive:
+                    CharacterDetailRow(label: "Status", value: "👍🏼 Alive")
+                case .dead:
+                    CharacterDetailRow(label: "Status", value: "☠️ Dead")
+                case .unknown:
+                    CharacterDetailRow(label: "Status", value: "🤨 Unknown")
+            }
+            if let species = character.species {
+                CharacterDetailRow(label: "Species", value: species)
+            }
+            if let type = character.type {
+                CharacterDetailRow(label: "Type", value: !type.isEmpty ? type : "-")
+                /// Some characters have empty strings...
+            }
+            switch character.formattedGender {
+                case .female:
+                    CharacterDetailRow(label: "Gender", value: "♀ Female")
+                case .male:
+                    CharacterDetailRow(label: "Gender", value: "♂ Male")
+                case .genderless:
+                    CharacterDetailRow(label: "Gender", value: "⚤ Genderless")
+                case .unknown:
+                    CharacterDetailRow(label: "Gender", value: "Unknown")
+            }
+            if let originName = character.origin?.name {
+                CharacterDetailRow(label: "Origin", value: originName)
+            }
+            if let episodesCount = character.episode?.count {
+                CharacterDetailRow(label: "Appearance", value: "\(episodesCount) \(episodesCount <= 1 ? "episode" : "episodes")")
+            }
+        }
+    }
+    
+    // MARK: Character Export
+    @ViewBuilder
+    private func CharacterExport(character: Character) -> some View {
+        Section {
+            Button(action: {
+                self.characterVM.exportCharacter()
+            }){
+                Label("Save this character", systemImage: "square.and.arrow.down")
+                    .fontWeight(.semibold).foregroundStyle(.primary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+            }.buttonStyle(.borderedProminent)
+        }
+        .listRowBackground(Color.clear)
+        .listRowInsets(.init())
+        .fileExporter(
+            isPresented: $characterVM.showingExporter,
+            document: characterVM.exportDocument,
+            contentType: .plainText,
+            defaultFilename: characterVM.exportFileName
+        ) { _ in }
     }
 }
 
