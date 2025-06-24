@@ -105,7 +105,7 @@ class EpisodesViewModel: ObservableObject {
             
             self.episodes = response.results
             
-            UserDefaults.standard.set(Date(), forKey: lastFetchKey)
+            UserDefaults.standard.set(Date.now, forKey: lastFetchKey)
             
             self.status = .loaded(())
         } catch {

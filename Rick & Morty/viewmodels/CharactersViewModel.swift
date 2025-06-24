@@ -60,7 +60,7 @@ class CharactersViewModel: ObservableObject {
             saveCharacterToStorage(character: character, context: modelContext)
             
             /// When the last loading was?
-            UserDefaults.standard.set(Date(), forKey: lastCharacterFetchKey + "\(id)")
+            UserDefaults.standard.set(Date.now, forKey: lastCharacterFetchKey + "\(id)")
             
             selectedCharacter = character
             status = .loaded(())
