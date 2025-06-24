@@ -10,8 +10,8 @@ import Foundation
 /// Used for formatting the date to the desired format
 extension String {
     func formattedDate() -> String {
-        // Input format: "September 10, 2017"
-        // Output format: "10 September 2017"
+        /// Input format: "September 10, 2017"
+        /// Output format: "10 September 2017"
         
         let inputFormatter = DateFormatter()
         inputFormatter.dateFormat = "MMMM d, yyyy"
@@ -25,7 +25,7 @@ extension String {
             return outputFormatter.string(from: date)
         }
         
-        // If parsing fails, return original string
+        /// If parsing fails, return original string
         return self
     }
 }

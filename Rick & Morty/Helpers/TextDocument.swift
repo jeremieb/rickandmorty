@@ -4,6 +4,8 @@
 //
 //  Created by Jeremie Berduck on 20/06/2025.
 //
+/// Used to create and edit document to be saved as files
+/// using the SwiftUI Document document based app functionality.
 
 import SwiftUI
 import UniformTypeIdentifiers

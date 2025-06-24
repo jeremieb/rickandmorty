@@ -10,8 +10,7 @@ import Foundation
 class NetworkService {
     
     static let shared = NetworkService()
-    
-    /// Basic API URL
+
     private let baseURL = "https://rickandmortyapi.com/api"
     
     /// Generic request method for any Codable type
@@ -64,20 +63,6 @@ class NetworkService {
     /// - Throws: NetworkError if any network or parsing error occurs
     func fetchCharacter(id: Int) async throws -> Character {
         guard let url = URL(string: "\(baseURL)/character/\(id)") else {
-            throw NetworkError.invalidURL
-        }
-        
-        return try await request(url: url)
-    }
-    
-    /// Fetch multiple characters by IDs from the Rick & Morty API
-    ///
-    /// - Parameter ids: Array of character IDs to fetch
-    /// - Returns: Array of Character objects
-    /// - Throws: NetworkError if any network or parsing error occurs
-    func fetchCharacters(ids: [Int]) async throws -> [Character] {
-        let idsString = ids.map { String($0) }.joined(separator: ",")
-        guard let url = URL(string: "\(baseURL)/character/\(idsString)") else {
             throw NetworkError.invalidURL
         }
         
