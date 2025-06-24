@@ -53,6 +53,16 @@ struct EpisodesListView: View {
                         .navigationDestination(item: $selectedEpisode) { episode in
                             EpisodeDetailView(selectedEpisode: episode)
                         }
+                        .toolbar {
+                            if let lastFetchDate = UserDefaults.standard.object(forKey: "lastEpisodesFetchDate") as? Date {
+                                ToolbarItem(placement: .topBarTrailing) {
+                                    HStack {
+                                        Image(systemName: "clock.badge.checkmark")
+                                        Text(lastFetchDate.formatted(date: .abbreviated, time: .shortened))
+                                    }.font(.caption).foregroundStyle(.secondary)
+                                }
+                            }
+                        }
                     case .failed(let error):
                         ErrorMessage(description: error?.localizedDescription ?? "Something went wrong.")
                 }
