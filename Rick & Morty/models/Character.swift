@@ -57,6 +57,8 @@ class Character: Identifiable, Codable, Hashable, @unchecked Sendable {
         }
     }
     
+    /// Because of the Codable protocol
+    /// We transform strings to the required format
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(Int.self, forKey: .id)
@@ -88,6 +90,7 @@ class Character: Identifiable, Codable, Hashable, @unchecked Sendable {
         created = try container.decodeIfPresent(String.self, forKey: .created)
     }
     
+    /// Everything is back to string to be stored
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
